@@ -7,6 +7,7 @@ import {
   obtenerFinPeriodoEscolar,
   contarDiasHabilesClases,
   obtenerInfoProximoDiaLibre,
+  obtenerProximoInicioVacaciones,
 } from './utils/dateUtils';
 import { descripcionesFestivos, diasFestivos } from './data/calendarData';
 
@@ -15,6 +16,7 @@ function App() {
   const [proximoFinDeSemana, setProximoFinDeSemana] = useState(null);
   const [finPeriodo, setFinPeriodo] = useState(null);
   const [infoDiaLibre, setInfoDiaLibre] = useState(null);
+  const [proximasVacaciones, setProximasVacaciones] = useState(null);
 
   useEffect(() => {
     const actualizarDatos = () => {
@@ -49,6 +51,10 @@ function App() {
 
       // Info día libre más cercano
       setInfoDiaLibre(obtenerInfoProximoDiaLibre());
+
+      // Próximas vacaciones
+      const vacaciones = obtenerProximoInicioVacaciones(ahora);
+      setProximasVacaciones(vacaciones);
     };
 
     actualizarDatos();
@@ -155,6 +161,18 @@ function App() {
               colorClase="bg-gradient-to-br from-purple-500 to-pink-600"
               diasHabiles={finPeriodo.diasHabiles}
               icono="🎓"
+            />
+          )}
+
+          {/* Próximas vacaciones */}
+          {proximasVacaciones && (
+            <Countdown
+              titulo={`Vacaciones: ${proximasVacaciones.nombre}`}
+              fechaObjetivo={proximasVacaciones.fechaInicio}
+              descripcion={`Inician: ${proximasVacaciones.fechaInicio.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })} · Regresan: ${new Date(proximasVacaciones.fechaFin.getTime() + 86400000).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}`}
+              colorClase="bg-gradient-to-br from-green-500 to-emerald-600"
+              diasHabiles={proximasVacaciones.diasHabiles}
+              icono="🌴"
             />
           )}
         </div>

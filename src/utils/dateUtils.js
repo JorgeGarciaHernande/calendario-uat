@@ -161,6 +161,24 @@ export const calcularTiempoRestante = (fechaObjetivo) => {
 };
 
 /**
+ * Obtiene el próximo período vacacional desde una fecha dada
+ */
+export const obtenerProximoInicioVacaciones = (desdeFecha = new Date()) => {
+  const hoy = formatearFecha(desdeFecha);
+
+  const proximoVacaciones = periodosVacacionales.find(p => p.inicio > hoy);
+
+  if (!proximoVacaciones) return null;
+
+  return {
+    fechaInicio: new Date(proximoVacaciones.inicio + 'T00:00:00'),
+    fechaFin: new Date(proximoVacaciones.fin + 'T00:00:00'),
+    nombre: proximoVacaciones.nombre,
+    diasHabiles: contarDiasHabilesClases(desdeFecha, new Date(proximoVacaciones.inicio + 'T00:00:00')),
+  };
+};
+
+/**
  * Obtiene información completa del próximo día libre
  */
 export const obtenerInfoProximoDiaLibre = () => {
