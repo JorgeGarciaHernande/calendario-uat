@@ -7,7 +7,6 @@ import {
   obtenerFinPeriodoEscolar,
   contarDiasHabilesClases,
   obtenerInfoProximoDiaLibre,
-  obtenerProximoInicioVacaciones,
 } from './utils/dateUtils';
 import { descripcionesFestivos, diasFestivos } from './data/calendarData';
 
@@ -16,7 +15,7 @@ function App() {
   const [proximoFinDeSemana, setProximoFinDeSemana] = useState(null);
   const [finPeriodo, setFinPeriodo] = useState(null);
   const [infoDiaLibre, setInfoDiaLibre] = useState(null);
-  const [proximasVacaciones, setProximasVacaciones] = useState(null);
+  const [semanaSanta, setSemanaSanta] = useState(null);
 
   useEffect(() => {
     const actualizarDatos = () => {
@@ -52,9 +51,16 @@ function App() {
       // Info día libre más cercano
       setInfoDiaLibre(obtenerInfoProximoDiaLibre());
 
-      // Próximas vacaciones
-      const vacaciones = obtenerProximoInicioVacaciones(ahora);
-      setProximasVacaciones(vacaciones);
+      // Semana Santa - hardcoded
+      const inicioSS = new Date('2026-03-27T00:00:00');
+      const finSS = new Date('2026-04-13T00:00:00'); // regreso a clases
+      if (ahora < finSS) {
+        setSemanaSanta({
+          fechaInicio: inicioSS,
+          fechaRegreso: finSS,
+          diasHabiles: contarDiasHabilesClases(ahora, inicioSS),
+        });
+      }
     };
 
     actualizarDatos();
@@ -164,14 +170,14 @@ function App() {
             />
           )}
 
-          {/* Próximas vacaciones */}
-          {proximasVacaciones && (
+          {/* Semana Santa */}
+          {semanaSanta && (
             <Countdown
-              titulo={`Vacaciones: ${proximasVacaciones.nombre}`}
-              fechaObjetivo={proximasVacaciones.fechaInicio}
-              descripcion={`Inician: ${proximasVacaciones.fechaInicio.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })} · Regresan: ${new Date(proximasVacaciones.fechaFin.getTime() + 86400000).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}`}
+              titulo="Vacaciones de Semana Santa"
+              fechaObjetivo={semanaSanta.fechaInicio}
+              descripcion="Inician: 27 de marzo · Regresan: 13 de abril"
               colorClase="bg-gradient-to-br from-green-500 to-emerald-600"
-              diasHabiles={proximasVacaciones.diasHabiles}
+              diasHabiles={semanaSanta.diasHabiles}
               icono="🌴"
             />
           )}
